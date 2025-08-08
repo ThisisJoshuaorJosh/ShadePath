@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShadePath - Smarter Paths. Healthier Cities.</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/phosphor-icons@2.0.3/src/bold/index.js"></script>
+    
+    <!-- AOS Animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #2d5940;
+            --accent-green: #4a7c59;
+            --light-green: #7fb069;
+            --moss-green: #8fbc8f;
+            --soft-beige: #f7f5f3;
+            --charcoal: #3c3c3c;
+            --light-gray: #f0f4f0;
+            --soft-gray: #eef5ec;
+            --white: #ffffff;
+            --gradient-primary: linear-gradient(135deg, #2d5940 0%, #4a7c59 100%);
+            --gradient-accent: linear-gradient(90deg, #7fb069 0%, #8fbc8f 100%);
+            --section-bg-1: #f0f4f0;
+            --section-bg-2: #ffffff;
+            --section-bg-3: #eef5ec;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--charcoal);
+            background-color: var(--soft-beige);
+            overflow-x: hidden;
+        }
+
+        /* Typography */
+        .playfair {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(127, 176, 105, 0.3) 0%, rgba(127, 176, 105, 0.1) 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        header {
+            background-color: transparent;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            padding: 1rem 0;
+        }
+
+        header.scrolled {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--white);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        header.scrolled .logo {
+            color: var(--primary-green);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled .nav-links a {
+            color: var(--charcoal);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+    	    height: 100vh;
+    	    background: 
+                linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+                url('shadepath_background.jpg');
+    	    background-size: cover;
+    	    background-position: center;
+    	    background-repeat: no-repeat;
+    	    position: relative;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: var(--white);
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-tagline {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .typing-text {
+            border-right: 3px solid var(--light-green);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: var(--white);
+            padding: 1.2rem 3rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 30px rgba(45, 89, 64, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(45, 89, 64, 0.4);
+        }
+
+        /* Section Base Styles */
+        .section {
+            padding: 6rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section:nth-child(even) {
+            background-color: var(--section-bg-2);
+        }
+
+        .section:nth-child(odd) {
+            background-color: var(--section-bg-1);
+        }
+
+        .section:nth-child(3n) {
+            background-color: var(--section-bg-3);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.01em;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--charcoal);
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.8;
+        }
+
+        /* Problem Section */
+        .problem {
+            background: linear-gradient(135deg, #fff5f5 0%, var(--white) 100%);
+        }
+
+        .problem-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .problem p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        /* Split Layout Sections */
+        .split-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .split-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+        }
+
+        .split-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .split-image {
+            position: relative;
+        }
+
+        .split-image img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        /* How It Works Features */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: var(--white);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-accent);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            color: var(--white);
+            font-size: 1.8rem;
+        }
+
+        .feature-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--charcoal);
+            line-height: 1.7;
+        }
+
+        /* Quote/Philosophy Section */
+        .philosophy-quote {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-style: italic;
+            text-align: center;
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 3rem;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .philosophy-quote::before {
+            content: '"';
+            font-size: 4rem;
+            color: var(--light-green);
+            position: absolute;
+            top: 1rem;
+            left: 2rem;
+            opacity: 0.5;
+        }
+
+        /* Coming Soon Section */
+        .coming-soon {
+            background: var(--gradient-primary);
+            color: var(--white);
+            text-align: center;
+            position: relative;
+        }
+
+        .coming-soon .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .coming-soon h2 {
+            color: var(--white);
+            margin-bottom: 2rem;
+        }
+
+        .demo-preview {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 4rem;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .demo-preview h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .demo-preview p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .secondary-button {
+            display: inline-block;
+            background: transparent;
+            color: var(--white);
+            padding: 1rem 2.5rem;
+            text-decoration: none;
+            border: 2px solid var(--white);
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-button:hover {
+            background: var(--white);
+            color: var(--primary-green);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--charcoal);
+            color: var(--white);
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        /* Icons */
+        .icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .hero-tagline {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 4rem 0;
+            }
+
+            .section h2 {
+                font-size: 2.2rem;
+            }
+
+            .split-section {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .philosophy-quote {
+                font-size: 1.4rem;
+                padding: 2rem;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <nav class="container">
+            <a href="#" class="logo">ShadePath</a>
+            <ul class="nav-links">
+                <li><a href="#problem">Challenge</a></li>
+                <li><a href="#solution">Solution</a></li>
+                <li><a href="#how">How It Works</a></li>
+                <li><a href="#vision">Vision</a></li>
+                <li><a href="#demo">Demo</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="fade-in">ShadePath</h1>
+                <div class="hero-tagline">
+                    <span class="typing-text" id="typingText"></span>
+                </div>
+                <p class="hero-subtitle fade-in">
+                    Optimizing urban movement through <span class="highlight">shade</span> and <span class="highlight">greenery</span>
+                </p>
+                <a href="#solution" class="cta-button fade-in">
+                    ↓ Discover How
+                </a>
+            </div>
+        </section>
+
+        <!-- PROBLEM SECTION -->
+        <section id="problem" class="section problem">
+            <div class="container">
+                <div class="problem-content">
+                    <h2 class="fade-in">The Urban Heat Challenge</h2>
+                    <p class="fade-in">
+                        Modern cities are becoming heat islands. Glass facades, concrete expanses, and poor urban design trap heat, making our daily walks uncomfortable and unhealthy. As temperatures rise, the way we move through cities has become a <span class="highlight">climate</span> and <span class="highlight">health</span> issue.
+                    </p>
+                    <p class="fade-in">
+                        We can't redesign cities from scratch. But we can use what's already there — buildings, shadows, and greenery — to create healthier paths through urban heat.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SOLUTION SECTION -->
+        <section id="solution" class="section">
+            <div class="container">
+                <div class="split-section">
+                    <div class="split-content fade-in">
+                        <h3>What is <span class="gradient-text">ShadePath</span>?</h3>
+                        <p>
+                            ShadePath uses <span class="highlight">GIS technology</span>, weather data, and building geometry to calculate shaded walking paths in real time. It transforms the harshness of the city into livable, walkable, and healthy routes.
+                        </p>
+                        <p>
+                            By understanding urban shadows and green infrastructure, ShadePath guides you through the coolest, most comfortable paths available — turning every walk into a way to move smarter through the heat.
+                        </p>
+                    </div>
+                    <div class="split-image fade-in">
+    		        <img src="map1.jpg" 
+         		    alt="Smart Navigation Map"
+         		    style="width: 100%; height: 300px; object-fit: cover; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);">
+		    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHILOSOPHY SECTION -->
+        <section class="section">
+            <div class="container">
+                <div class="section-header fade-in">
+                    <h2><span class="gradient-text">Efficiency</span> Meets Humanity</h2>
+                    <p class="section-subtitle">
+                        <span class="highlight">Efficiency</span> isn't about speed. It's about alignment with values — time, <span class="highlight">health</span>, and safety.
+                    </p>
+                </div>
+                
+                <div class="philosophy-quote fade-in" style="font-size: 1.6rem; padding: 2.5rem 2rem;">
+    		    “Efficiency in urban design is balancing resource consumption with 
+    		    <span class="highlight">comfort</span>, 
+    		    <span class="highlight">safety</span>, 
+    		    <span class="highlight">access</span>, and 
+    		    <span class="highlight">productivity</span>.”
+    
+    		    <br><br>
+    
+    		    <span style="display: block; font-size: 0.95rem; font-style: normal; color: #777;">
+        	        — <em>Principles of Intelligent Urbanism</em>
+    		    </span>
+		</div>
+                
+                <div class="section-content fade-in">
+                    <p style="text-align: center; font-size: 1.1rem; max-width: 700px; margin: 0 auto;">
+                        This is navigation redesigned for human wellbeing, where the smartest route is the one that keeps you cool, comfortable, and connected to the green spaces that make cities livable.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOW IT WORKS SECTION -->
+        <section id="how" class="section">
+            <div class="container">
+                <div class="section-header fade-in">
+                    <h2>How It Works</h2>
+                    <p class="section-subtitle">
+                        ShadePath operates on three intelligent layers that work together to create optimal walking experiences
+                    </p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon">
+                            🏢
+                        </div>
+                        <h3>Urban <span class="highlight">Shade</span></h3>
+                        <p>Urban geometry and building shadows are mapped in real-time, calculating <span class="highlight">shade</span> coverage throughout the day to identify the coolest walking corridors.</p>
+                    </div>
+                    
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon">
+                            🌿
+                        </div>
+                        <h3>Green Infrastructure</h3>
+                        <p>Trees, parks, and vegetation are integrated into route planning, prioritizing paths that maximize exposure to natural cooling and air quality benefits.</p>
+                    </div>
+                    
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon">
+                            📱
+                        </div>
+                        <h3>Smart Platform</h3>
+                        <p>GIS data, real-time weather information, and intuitive user experience combine to deliver personalized, <span class="highlight">climate</span>-aware navigation.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISION SECTION -->
+        <section id="vision" class="section">
+            <div class="container">
+                <div class="split-section">
+                    <div class="split-image fade-in">
+    			<img src="picture1.jpg" alt="Smart City Vision" style="width: 100%; height: 350px; object-fit: cover; border-radius: 20px;">
+		    </div>
+                    <div class="split-content fade-in">
+                        <h3>Beyond the Map</h3>
+                        <p>
+                            ShadePath isn't just a navigation tool — it's a new way of thinking about urban flow, <span class="highlight">sustainable</span> design, and ESG micro-interventions. Every route calculation contributes to a larger understanding of how cities can adapt to <span class="highlight">climate</span> change.
+                        </p>
+                        <p>
+                            By revealing the hidden cooling networks that already exist in our cities, ShadePath helps urban planners, residents, and policymakers see new possibilities for <span class="highlight">sustainable</span> urban living.
+                        </p>
+                        <p>
+                            This is urban intelligence designed for the <span class="highlight">climate</span> era — where technology serves both individual comfort and collective resilience.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMING SOON / DEMO SECTION -->
+        <section id="demo" class="section coming-soon">
+            <div class="container">
+                <h2 class="fade-in">Interactive Experience</h2>
+                <div class="demo-preview fade-in">
+                    <h3>🗺️ Interactive Shade Map</h3>
+                    <p>Experience ShadePath's real-time shadow mapping and route optimization in your city.</p>
+                    <!-- PLACEHOLDER: This is where you'll add the interactive map component -->
+                    <div style="background: rgba(255,255,255,0.1); height: 200px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 2rem 0; border: 1px dashed rgba(255,255,255,0.3);">
+                        <p style="opacity: 0.7;">📍 Coming soon</p>
+                    </div>
+                    <a href="#" class="secondary-button">
+                        ▶️ View Demo
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 ShadePath. <span class="highlight">Smarter paths</span> for healthier cities.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize basic animations after page load
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Initialize AOS if available
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    duration: 800,
+                    easing: 'ease-out-quart',
+                    once: true,
+                    offset: 100
+                });
+            }
+
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('header');
+                if (window.scrollY > 100) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // Smooth scrolling for navigation
+            document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Typing animation for hero tagline
+            const typingText = document.getElementById('typingText');
+            const phrases = ['Smarter Paths.', 'Healthier Cities.', 'Sustainable Movement.'];
+            let phraseIndex = 0;
+            let letterIndex = 0;
+            let isDeleting = false;
+
+            function typePhrase() {
+                const currentPhrase = phrases[phraseIndex];
+                
+                if (isDeleting) {
+                    typingText.textContent = currentPhrase.substring(0, letterIndex - 1);
+                    letterIndex--;
+                } else {
+                    typingText.textContent = currentPhrase.substring(0, letterIndex + 1);
+                    letterIndex++;
+                }
+
+                let typeSpeed = isDeleting ? 50 : 100;
+
+                if (!isDeleting && letterIndex === currentPhrase.length) {
+                    typeSpeed = 2000; // Pause at end
+                    isDeleting = true;
+                } else if (isDeleting && letterIndex === 0) {
+                    isDeleting = false;
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    typeSpeed = 500; // Pause before next phrase
+                }
+
+                setTimeout(typePhrase, typeSpeed);
+            }
+
+            // Start typing animation after a short delay
+            setTimeout(function() {
+                typePhrase();
+            }, 1000);
+
+            // Simple fade-in animation on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all fade-in elements
+            document.querySelectorAll('.fade-in').forEach(function(el) {
+                observer.observe(el);
+            });
+
+            // Add visible class to hero elements immediately
+            setTimeout(function() {
+                document.querySelectorAll('.hero .fade-in').forEach(function(el) {
+                    el.classList.add('visible');
+                });
+            }, 500);
+
+            console.log('✅ ShadePath website loaded successfully!');
+        });
+    </script>
+</body>
+</html>
