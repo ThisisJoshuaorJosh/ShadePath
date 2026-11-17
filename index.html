@@ -645,6 +645,17 @@
                     <p class="fade-in">
                         We can't redesign cities from scratch. But we can use what's already there — buildings, shadows, and greenery — to create healthier paths through urban heat.
                     </p>
+                    <section class="heat-route-example" aria-labelledby="heat-route-title">
+                        <h3 id="heat-route-title">One extra minute. More of your walk near greenery.</h3>
+                        <p>ShadePath helps you weigh walking time against greenery and see how sunlight exposure changes with your departure time.</p>
+                        <p class="heat-route-caption">Trinity College → Chestnut Residence</p>
+                        <div class="heat-route-grid">
+                            <div><span>Fastest route</span><strong>81%</strong><span>near greenery · 22m 08s</span></div>
+                            <div><span>More greenery</span><strong>99%</strong><span>near greenery · 23m 14s</span></div>
+                        </div>
+                        <p class="heat-route-caption">Greenery proximity is the share of the route within 20 m of mapped trees or green spaces.</p>
+                        <a href="#demo" class="secondary-button">Compare the routes</a>
+                    </section>
                 </div>
             </div>
         </section>
@@ -782,10 +793,19 @@
     <button class="btn" type="button" data-reset>Reset walk</button>
   </div>
   <p class="tabular-nums" data-clock></p>
-  <div class="viz-controls" role="group" aria-label="Walking route">
-    <button class="btn btn-primary" type="button" data-route="0" aria-pressed="true">Fastest route</button>
-    <button class="btn" type="button" data-route="1" aria-pressed="false">More greenery</button>
+  <div class="viz-controls shade-route-picker" role="group" aria-label="Walking route">
+    <button class="btn btn-primary" type="button" data-route="0" aria-pressed="true"><strong>Fastest route</strong><span>22m 08s</span></button>
+    <button class="btn" type="button" data-route="1" aria-pressed="false"><strong>More greenery</strong><span>23m 14s</span></button>
   </div>
+  <table class="shade-route-stats">
+    <caption class="shade-sr-only">Estimated route comparison at departure</caption>
+    <thead><tr><th scope="col">Metric</th><th scope="col">Fastest</th><th scope="col">More greenery</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Near greenery</th><td>81%</td><td>99%</td></tr>
+      <tr><th scope="row">Direct sun</th><td data-sun="0">…</td><td data-sun="1">…</td></tr>
+      <tr><th scope="row">Building shade</th><td data-shade="0">…</td><td data-shade="1">…</td></tr>
+    </tbody>
+  </table>
   <div class="shade-map">
     <canvas role="img" aria-label="Map comparing two walking routes between Trinity College and 89 Chestnut Street"></canvas>
     <div class="shade-key text-small" aria-label="Map legend">
@@ -821,6 +841,22 @@
 #shadepath-chestnut .text-muted { color:#4b5b53; }
 #shadepath-chestnut a { color:#164f83; }
 #shadepath-chestnut [data-route] { max-width:100%; white-space:normal; }
+#shadepath-chestnut .shade-route-picker { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); width:min(100%,32rem); margin:1rem auto .6rem; }
+#shadepath-chestnut .shade-route-picker button { display:grid; justify-items:center; align-content:center; text-align:center; padding:.55rem .4rem; gap:.15rem; }
+#shadepath-chestnut .shade-route-picker button span { font-size:.875rem; }
+#shadepath-chestnut .shade-route-stats { width:min(100%,32rem); margin:0 auto 1rem; border-collapse:collapse; font-size:.875rem; }
+#shadepath-chestnut .shade-route-stats th, #shadepath-chestnut .shade-route-stats td { padding:.36rem .3rem; text-align:center; border-bottom:1px solid #d4e1d5; }
+#shadepath-chestnut .shade-route-stats th:first-child { text-align:left; }
+#shadepath-chestnut .shade-sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+.heat-route-example { margin:2rem auto 0; padding:clamp(.9rem,3vw,2rem); border:1px solid #cfded0; border-radius:16px; background:#f1f7ef; color:#172d26; text-align:center; }
+.problem-content .heat-route-example h3 { font-size:clamp(1.35rem,3vw,2rem); line-height:1.2; }
+.problem-content .heat-route-example p { margin:.75rem auto; font-size:1rem; }
+.problem-content .heat-route-example .heat-route-caption { font-size:.875rem; }
+.heat-route-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; }
+.heat-route-grid > div { padding:.7rem .35rem; background:#fff; border-radius:10px; display:grid; align-content:center; }
+.heat-route-grid > div:last-child { background:#deeddf; }
+.heat-route-grid strong { font-size:clamp(1.7rem,5vw,2.65rem); line-height:1.2; }
+.heat-route-grid span { font-size:.875rem; }
 #demo #shadepath-chestnut h2,
 #shadepath-chestnut .shade-departure,
 #shadepath-chestnut [data-clock] { text-align:center; }
@@ -997,6 +1033,10 @@
   }
   const depart = root.querySelector('[data-depart]');
   const play = root.querySelector('[data-play]');
+  const simulationSpeed = 100;
+  const elapsedPerMillisecond = simulationSpeed / 1000;
+  const sunCells = [...root.querySelectorAll('[data-sun]')];
+  const shadeCells = [...root.querySelectorAll('[data-shade]')];
   const speed = 4.8 / 3.6;
   const maxSeconds = Math.max(...routes.map(r => r.meters / speed));
   const formatter = new Intl.DateTimeFormat('en-CA', {timeZone:'America/Toronto',hour:'2-digit', minute:'2-digit',second:'2-digit',hourCycle:'h23'});
@@ -1052,10 +1092,11 @@
     const best = count[1].direct<count[0].direct ? 1 : 0;
     comparison.textContent = tie ? 'Similar direct-sun time · Fastest route saves walking time.' :
       `Best of these two for avoiding sun: ${labels[best]} · ${formatTime(Math.abs(count[1].direct-count[0].direct))} less in direct sun`;
-    routes.forEach((route,i)=>{
-      buttons[i].textContent = `${labels[i]} · ${formatTime(route.meters/speed)} · ${route.vegetation}% vegetation · ${count[i].shade}% shade · ${formatTime(count[i].direct)} direct sun`;
-      buttons[i].setAttribute('aria-pressed',String(i===selected));
-      buttons[i].classList.toggle('btn-primary',i===selected);
+    buttons.forEach((button,i)=>{
+      sunCells[i].textContent = formatTime(count[i].direct);
+      shadeCells[i].textContent = count[i].shade + '%';
+      button.setAttribute('aria-pressed',String(i===selected));
+      button.classList.toggle('btn-primary',i===selected);
     });
   }
   function refresh() {
@@ -1068,10 +1109,10 @@
   function stop() {
     if (frame !== undefined) cancelAnimationFrame(frame);
     run = null;
-    play.textContent = elapsed>=maxSeconds ? 'Replay ×30' : elapsed ? 'Resume ×30' : 'Simulate walk';
+    play.textContent = elapsed>=maxSeconds ? 'Replay ×100' : elapsed ? 'Resume ×100' : 'Simulate walk';
   }
   function tick(now) {
-    elapsed = Math.min(maxSeconds,(now-run)*.03);
+    elapsed = Math.min(maxSeconds,(now-run)*elapsedPerMillisecond);
     refresh();
     if (elapsed<maxSeconds) frame=requestAnimationFrame(tick);
     else stop();
@@ -1099,7 +1140,7 @@
     if (run!==null) {stop();return;}
     if (elapsed>=maxSeconds) elapsed=0;
     if (elapsed===0) syncDeparture();
-    run=performance.now()-elapsed/.03;
+    run=performance.now()-elapsed/elapsedPerMillisecond;
     play.textContent='Pause';
     frame=requestAnimationFrame(tick);
   });
